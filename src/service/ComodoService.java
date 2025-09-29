@@ -4,6 +4,7 @@ import dto.ComodoDTO;
 import model.Comodo;
 import model.Residencia;
 import repository.ComodoRep;
+import repository.ResidenciaRep;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -13,17 +14,20 @@ import java.util.stream.Collectors;
 public class ComodoService {
 
     private ComodoRep comodoRep;
+    private ResidenciaRep residenciaRep;
 
     public ComodoService() {
         this.comodoRep = new ComodoRep();
+        this.residenciaRep = new ResidenciaRep();
     }
 
     public ComodoDTO criarComodo(ComodoDTO comodoDTO) throws SQLException, IOException {
-        Comodo comodo = new Comodo(
-            null,
-            comodoDTO.getNome(),
-            new Residencia(comodoDTO.getResidenciaId(), null, null, null)
-        );
+        Residencia residencia = residenciaRep.buscarPorId(comodoDTO.getResidenciaId());
+        if (residencia == null) {
+            throw new SQLException("Residência com ID " + comodoDTO.getResidenciaId() + " não encontrada.");
+        }
+
+        Comodo comodo = new Comodo(null, comodoDTO.getNome(), residencia); // ID deve ser null
         comodoRep.salvar(comodo);
         comodoDTO.setId(comodo.getId());
         return comodoDTO;
