@@ -22,7 +22,7 @@ public class ComodoService {
         Comodo comodo = new Comodo(
             null,
             comodoDTO.getNome(),
-            new Residencia(comodoDTO.getResidenciaId(), null, null)
+            new Residencia(comodoDTO.getResidenciaId(), null, null, null)
         );
         comodoRep.salvar(comodo);
         comodoDTO.setId(comodo.getId());
@@ -35,7 +35,7 @@ public class ComodoService {
             Comodo comodo = new Comodo(
                 id,
                 comodoDTO.getNome(),
-                new Residencia(comodoDTO.getResidenciaId(), null, null)
+                new Residencia(comodoDTO.getResidenciaId(), null, null, null)
             );
             comodoRep.atualizar(comodo);
             return comodoDTO;

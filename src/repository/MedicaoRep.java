@@ -13,7 +13,7 @@ public class MedicaoRep {
 
     // Método para salvar uma nova medição no banco de dados
     public void salvar(Medicao medicao) throws SQLException, IOException {
-        String sql = "INSERT INTO medicao (data_hora, nivel_sinal, velocidade, interferencia, comodo_id, residencia_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO medicao (data_hora, nivel_sinal, velocidade, interferencia, banda, comodo_id, residencia_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexaoBanco.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -22,8 +22,9 @@ public class MedicaoRep {
             stmt.setInt(2, medicao.getNivelSinal());
             stmt.setDouble(3, medicao.getVelocidade());
             stmt.setString(4, medicao.getInterferencia());
-            stmt.setLong(5, medicao.getComodo().getId());
-            stmt.setLong(6, medicao.getResidencia().getId());
+            stmt.setString(5, medicao.getBanda());
+            stmt.setLong(6, medicao.getComodo().getId());
+            stmt.setLong(7, medicao.getResidencia().getId());
             stmt.executeUpdate();
 
             // Recupera o ID gerado automaticamente
@@ -52,8 +53,9 @@ public class MedicaoRep {
                         rs.getInt("nivel_sinal"),
                         rs.getDouble("velocidade"),
                         rs.getString("interferencia"),
+                        rs.getString("banda"), // Nova coluna
                         new Comodo(rs.getLong("comodo_id"), null, null), // Apenas o ID do cômodo
-                        new Residencia(rs.getLong("residencia_id"), null, null) // Apenas o ID da residência
+                        new Residencia(rs.getLong("residencia_id"), null, null, null) // Apenas o ID da residência
                     );
                 }
             }
@@ -77,8 +79,9 @@ public class MedicaoRep {
                     rs.getInt("nivel_sinal"),
                     rs.getDouble("velocidade"),
                     rs.getString("interferencia"),
+                    rs.getString("banda"), // Nova coluna
                     new Comodo(rs.getLong("comodo_id"), null, null),
-                    new Residencia(rs.getLong("residencia_id"), null, null)
+                    new Residencia(rs.getLong("residencia_id"), null, null, null)
                 );
                 medicoes.add(medicao);
             }
@@ -88,7 +91,7 @@ public class MedicaoRep {
 
     // Método para atualizar uma medição
     public void atualizar(Medicao medicao) throws SQLException, IOException {
-        String sql = "UPDATE medicao SET data_hora = ?, nivel_sinal = ?, velocidade = ?, interferencia = ?, comodo_id = ?, residencia_id = ? WHERE id = ?";
+        String sql = "UPDATE medicao SET data_hora = ?, nivel_sinal = ?, velocidade = ?, interferencia = ?, banda = ?, comodo_id = ?, residencia_id = ? WHERE id = ?";
 
         try (Connection conn = ConexaoBanco.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -97,9 +100,10 @@ public class MedicaoRep {
             stmt.setInt(2, medicao.getNivelSinal());
             stmt.setDouble(3, medicao.getVelocidade());
             stmt.setString(4, medicao.getInterferencia());
-            stmt.setLong(5, medicao.getComodo().getId());
-            stmt.setLong(6, medicao.getResidencia().getId());
-            stmt.setLong(7, medicao.getId());
+            stmt.setString(5, medicao.getBanda());
+            stmt.setLong(6, medicao.getComodo().getId());
+            stmt.setLong(7, medicao.getResidencia().getId());
+            stmt.setLong(8, medicao.getId());
             stmt.executeUpdate();
         }
     }

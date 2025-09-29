@@ -31,7 +31,7 @@ public class ComodoRep {
 
     // Método para buscar um cômodo pelo ID
     public Comodo buscarPorId(Long id) throws SQLException, IOException {
-        String sql = "SELECT c.id, c.nome, c.residencia_id, r.nome AS residencia_nome " +
+        String sql = "SELECT c.id, c.nome, c.residencia_id, r.nome AS residencia_nome, r.cliente AS residencia_cliente " +
                      "FROM comodo c " +
                      "JOIN residencia r ON c.residencia_id = r.id " +
                      "WHERE c.id = ?";
@@ -46,6 +46,7 @@ public class ComodoRep {
                     Residencia residencia = new Residencia(
                         rs.getLong("residencia_id"),
                         rs.getString("residencia_nome"),
+                        rs.getString("residencia_cliente"),
                         null // Outros atributos de Residencia podem ser adicionados aqui
                     );
                     comodo = new Comodo(
@@ -61,7 +62,7 @@ public class ComodoRep {
 
     // Método para buscar todos os cômodos
     public List<Comodo> buscarTodos() throws SQLException, IOException {
-        String sql = "SELECT c.id, c.nome, c.residencia_id, r.nome AS residencia_nome " +
+        String sql = "SELECT c.id, c.nome, c.residencia_id, r.nome AS residencia_nome, r.cliente AS residencia_cliente " +
                      "FROM comodo c " +
                      "JOIN residencia r ON c.residencia_id = r.id";
         List<Comodo> comodos = new ArrayList<>();
@@ -74,6 +75,7 @@ public class ComodoRep {
                 Residencia residencia = new Residencia(
                     rs.getLong("residencia_id"),
                     rs.getString("residencia_nome"),
+                    rs.getString("residencia_cliente"),
                     null
                 );
                 Comodo comodo = new Comodo(

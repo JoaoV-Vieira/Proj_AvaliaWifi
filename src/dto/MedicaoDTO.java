@@ -9,22 +9,25 @@ public class MedicaoDTO {
     private int nivelSinal;
     private double velocidade;
     private String interferencia;
+    private String banda; // Nova coluna para a banda do Wi-Fi
     private Long comodoId;
     private Long residenciaId;
 
     public MedicaoDTO() {
     }
 
-    public MedicaoDTO(Long id, LocalDateTime dataHora, int nivelSinal, double velocidade, String interferencia, Long comodoId, Long residenciaId) {
+    public MedicaoDTO(Long id, LocalDateTime dataHora, int nivelSinal, double velocidade, String interferencia, String banda, Long comodoId, Long residenciaId) {
         this.id = id;
         this.dataHora = dataHora;
         this.nivelSinal = nivelSinal;
         this.velocidade = velocidade;
         this.interferencia = interferencia;
+        this.banda = banda;
         this.comodoId = comodoId;
         this.residenciaId = residenciaId;
     }
 
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -63,6 +66,14 @@ public class MedicaoDTO {
 
     public void setInterferencia(String interferencia) {
         this.interferencia = interferencia;
+    }
+
+    public String getBanda() {
+        return banda;
+    }
+
+    public void setBanda(String banda) {
+        this.banda = banda;
     }
 
     public Long getComodoId() {

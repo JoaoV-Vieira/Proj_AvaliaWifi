@@ -17,7 +17,7 @@ public class TesteService {
 
         try {
             
-            ResidenciaDTO residenciaDTO = new ResidenciaDTO(null, "Residência 1", "Rua A, 123");
+            ResidenciaDTO residenciaDTO = new ResidenciaDTO(null, "Casa 1", "Aqui, 123", "Joãozinho");
             residenciaDTO = residenciaService.criarResidencia(residenciaDTO);
             System.out.println("Residência criada com ID: " + residenciaDTO.getId());
 
@@ -25,7 +25,7 @@ public class TesteService {
             comodoDTO = comodoService.criarComodo(comodoDTO);
             System.out.println("Cômodo criado com ID: " + comodoDTO.getId());
 
-            MedicaoDTO medicaoDTO = new MedicaoDTO(null, LocalDateTime.now(), -65, 50.0, "Baixa interferência", comodoDTO.getId(), residenciaDTO.getId());
+            MedicaoDTO medicaoDTO = new MedicaoDTO(null, LocalDateTime.now(), -65, 50.0, "Baixa interferência", "5GHz", comodoDTO.getId(), residenciaDTO.getId());
             medicaoDTO = medicaoService.criarMedicao(medicaoDTO);
             System.out.println("Medição criada com ID: " + medicaoDTO.getId());
 

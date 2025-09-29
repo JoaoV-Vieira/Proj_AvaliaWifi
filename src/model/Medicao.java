@@ -9,22 +9,25 @@ public class Medicao {
     private int nivelSinal;
     private double velocidade;
     private String interferencia;
+    private String banda;
     private Comodo comodo;
     private Residencia residencia;
 
     public Medicao() {
     }
 
-    public Medicao(Long id, LocalDateTime dataHora, int nivelSinal, double velocidade, String interferencia, Comodo comodo, Residencia residencia) {
+    public Medicao(Long id, LocalDateTime dataHora, int nivelSinal, double velocidade, String interferencia, String banda, Comodo comodo, Residencia residencia) {
         this.id = id;
         this.dataHora = dataHora;
         this.nivelSinal = nivelSinal;
         this.velocidade = velocidade;
         this.interferencia = interferencia;
+        this.banda = banda;
         this.comodo = comodo;
         this.residencia = residencia;
     }
 
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -63,6 +66,14 @@ public class Medicao {
 
     public void setInterferencia(String interferencia) {
         this.interferencia = interferencia;
+    }
+
+    public String getBanda() {
+        return banda;
+    }
+
+    public void setBanda(String banda) {
+        this.banda = banda;
     }
 
     public Comodo getComodo() {

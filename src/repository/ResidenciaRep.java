@@ -10,13 +10,14 @@ public class ResidenciaRep {
 
     // Método para salvar uma nova residência no banco de dados
     public void salvar(Residencia residencia) throws SQLException, IOException {
-        String sql = "INSERT INTO residencia (nome, endereco) VALUES (?, ?)";
+        String sql = "INSERT INTO residencia (nome, endereco, cliente) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexaoBanco.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, residencia.getNome());
             stmt.setString(2, residencia.getEndereco());
+            stmt.setString(3, residencia.getCliente());
             stmt.executeUpdate();
 
             // Recupera o ID gerado automaticamente
@@ -42,7 +43,8 @@ public class ResidenciaRep {
                     residencia = new Residencia(
                         rs.getLong("id"),
                         rs.getString("nome"),
-                        rs.getString("endereco")
+                        rs.getString("endereco"),
+                        rs.getString("cliente")
                     );
                 }
             }
@@ -63,7 +65,8 @@ public class ResidenciaRep {
                 Residencia residencia = new Residencia(
                     rs.getLong("id"),
                     rs.getString("nome"),
-                    rs.getString("endereco")
+                    rs.getString("endereco"),
+                    rs.getString("cliente")
                 );
                 residencias.add(residencia);
             }
@@ -73,14 +76,15 @@ public class ResidenciaRep {
 
     // Método para atualizar uma residência
     public void atualizar(Residencia residencia) throws SQLException, IOException {
-        String sql = "UPDATE residencia SET nome = ?, endereco = ? WHERE id = ?";
+        String sql = "UPDATE residencia SET nome = ?, endereco = ?, cliente = ? WHERE id = ?";
 
         try (Connection conn = ConexaoBanco.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, residencia.getNome());
             stmt.setString(2, residencia.getEndereco());
-            stmt.setLong(3, residencia.getId());
+            stmt.setString(3, residencia.getCliente());
+            stmt.setLong(4, residencia.getId());
             stmt.executeUpdate();
         }
     }

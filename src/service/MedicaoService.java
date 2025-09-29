@@ -26,8 +26,9 @@ public class MedicaoService {
             medicaoDTO.getNivelSinal(),
             medicaoDTO.getVelocidade(),
             medicaoDTO.getInterferencia(),
+            medicaoDTO.getBanda(),
             new Comodo(medicaoDTO.getComodoId(), null, null),
-            new Residencia(medicaoDTO.getResidenciaId(), null, null)
+            new Residencia(medicaoDTO.getResidenciaId(), null, null, null)
         );
         medicaoRep.salvar(medicao);
         medicaoDTO.setId(medicao.getId());
@@ -42,6 +43,7 @@ public class MedicaoService {
                 medicao.getNivelSinal(),
                 medicao.getVelocidade(),
                 medicao.getInterferencia(),
+                medicao.getBanda(),
                 medicao.getComodo().getId(),
                 medicao.getResidencia().getId()
             ))

@@ -21,6 +21,7 @@ public class TesteMedicaoController {
                 -65,
                 50.0,
                 "Baixa interferência",
+                "5GHz", // Banda do Wi-Fi
                 1L, // ID do cômodo
                 1L  // ID da residência
             );

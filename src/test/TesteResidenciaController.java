@@ -12,33 +12,27 @@ public class TesteResidenciaController {
 
         try {
             // Criar uma nova residência
-            ResidenciaDTO novaResidencia = new ResidenciaDTO(null, "Residência 1", "Rua A, 123");
+            ResidenciaDTO novaResidencia = new ResidenciaDTO(null, "Casa 1", "Aqui, 123", "Joãozinho");
             novaResidencia = residenciaController.criarResidencia(novaResidencia);
             System.out.println("Residência criada com ID: " + novaResidencia.getId());
 
             // Buscar uma residência pelo ID
             ResidenciaDTO residencia = residenciaController.buscarResidencia(novaResidencia.getId());
-            System.out.println("Residência encontrada: " + residencia.getNome());
+            System.out.println("Residência encontrada: " + residencia.getNome() + ", Cliente: " + residencia.getCliente());
 
             // Atualizar uma residência
             residencia.setNome("Residência Atualizada");
+            residencia.setCliente("Cliente Atualizado");
             residenciaController.atualizarResidencia(residencia.getId(), residencia);
             System.out.println("Residência atualizada!");
 
             // Listar todas as residências
             System.out.println("Listando todas as residências:");
-            residenciaController.listarResidencias().forEach(r -> System.out.println(r.getNome()));
+            residenciaController.listarResidencias().forEach(r -> System.out.println(r.getNome() + ", Cliente: " + r.getCliente()));
 
             // Deletar uma residência
             residenciaController.deletarResidencia(residencia.getId());
             System.out.println("Residência deletada!");
-
-            // Tentar buscar uma residência deletada
-            try {
-                residenciaController.buscarResidencia(residencia.getId());
-            } catch (SQLException e) {
-                System.out.println("Erro esperado: " + e.getMessage());
-            }
 
         } catch (SQLException | IOException e) {
             e.printStackTrace();

@@ -5,14 +5,16 @@ public class Residencia {
     private Long id;
     private String nome;
     private String endereco;
+    private String cliente; // Nova coluna para o cliente
 
     public Residencia() {
     }
 
-    public Residencia(Long id, String nome, String endereco) {
+    public Residencia(Long id, String nome, String endereco, String cliente) {
         this.id = id;
         this.nome = nome;
         this.endereco = endereco;
+        this.cliente = cliente;
     }
 
     public Long getId() {
@@ -37,5 +39,13 @@ public class Residencia {
 
     public void setEndereco(String endereco) {
         this.endereco = endereco;
+    }
+
+    public String getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
     }
 }

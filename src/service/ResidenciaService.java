@@ -21,7 +21,8 @@ public class ResidenciaService {
         Residencia residencia = new Residencia(
             null,
             residenciaDTO.getNome(),
-            residenciaDTO.getEndereco()
+            residenciaDTO.getEndereco(),
+            residenciaDTO.getCliente()
         );
         residenciaRep.salvar(residencia);
         residenciaDTO.setId(residencia.getId());
@@ -34,7 +35,8 @@ public class ResidenciaService {
             Residencia residencia = new Residencia(
                 id,
                 residenciaDTO.getNome(),
-                residenciaDTO.getEndereco()
+                residenciaDTO.getEndereco(),
+                residenciaDTO.getCliente()
             );
             residenciaRep.atualizar(residencia);
             return residenciaDTO;
@@ -48,7 +50,8 @@ public class ResidenciaService {
             return new ResidenciaDTO(
                 residencia.getId(),
                 residencia.getNome(),
-                residencia.getEndereco()
+                residencia.getEndereco(),
+                residencia.getCliente()
             );
         }
         throw new SQLException("Residência com ID " + id + " não encontrada.");
@@ -59,7 +62,8 @@ public class ResidenciaService {
             .map(residencia -> new ResidenciaDTO(
                 residencia.getId(),
                 residencia.getNome(),
-                residencia.getEndereco()
+                residencia.getEndereco(),
+                residencia.getCliente()
             ))
             .collect(Collectors.toList());
     }
