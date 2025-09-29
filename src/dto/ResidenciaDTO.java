@@ -6,6 +6,15 @@ public class ResidenciaDTO {
     private String nome;
     private String endereco;
 
+    public ResidenciaDTO() {
+    }
+
+    public ResidenciaDTO(Long id, String nome, String endereco) {
+        this.id = id;
+        this.nome = nome;
+        this.endereco = endereco;
+    }
+
     public Long getId() {
         return id;
     }

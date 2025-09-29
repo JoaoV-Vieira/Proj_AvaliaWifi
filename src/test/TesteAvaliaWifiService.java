@@ -1,8 +1,10 @@
-package service;
+package test;
 
 import model.Medicao;
 import model.Comodo;
 import model.Residencia;
+import service.AvaliaWifiService;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ public class TesteAvaliaWifiService {
         AvaliaWifiService service = new AvaliaWifiService();
 
         // Residência 1
-        Residencia residencia1 = new Residencia(1L, "Residência Principal", "Rua das Flores, 123");
+        Residencia residencia1 = new Residencia(1L, "Residência Principal Nova", "Rua das Flores, 123");
         Comodo sala1 = new Comodo(1L, "Sala", residencia1);
         Comodo quarto1 = new Comodo(2L, "Quarto", residencia1);
 

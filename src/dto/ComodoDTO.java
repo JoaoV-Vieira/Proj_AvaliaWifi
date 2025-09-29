@@ -6,6 +6,15 @@ public class ComodoDTO {
     private String nome;
     private Long residenciaId;
 
+    public ComodoDTO() {
+    }
+
+    public ComodoDTO(Long id, String nome, Long residenciaId) {
+        this.id = id;
+        this.nome = nome;
+        this.residenciaId = residenciaId;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,61 +1,41 @@
 package repository;
 
-import java.io.*;
-import java.sql.*;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConexaoBanco {
-	
-	private static java.sql.Connection conn = null;
-	
-	public static Connection conectar() throws SQLException, IOException{
-		
-		if (conn == null) {
-			
-			Properties props = carregarPropriedades();
-			String url = props.getProperty("dburl");
-			conn = DriverManager.getConnection(url, props);
-		}
-		
-		return conn;
-	}
 
-	public static Connection desconectar() throws SQLException {
-		
-		if (conn != null) {
-			
-			conn.close();
-			conn = null;
-		}
-		
-		return conn;
-	}
-	
-	private static Properties carregarPropriedades() throws IOException {
-		
-		FileInputStream propriedadesBanco = null;
-		propriedadesBanco = new FileInputStream("database.properties");
-		
-		Properties props = new Properties();
-		props.load(propriedadesBanco);
+    private static Connection conn = null;
 
-		return props;
-	}
-	
-	@SuppressWarnings("unused")
-	public static void finalizarStatement(Statement st) throws SQLException {
-	
-		if (st != null) {
-			st.close();
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	public static void finalizarResultSet(ResultSet rs) throws SQLException {
-		
-		if (rs != null) {
-			rs.close();
-		}
-	}
+    public static Connection conectar() throws SQLException, IOException {
+        if (conn == null || conn.isClosed()) {
+            Properties props = carregarPropriedades();
+            String url = props.getProperty("dburl");
+            String user = props.getProperty("user");
+            String password = props.getProperty("password");
+
+            conn = DriverManager.getConnection(url, user, password);
+        }
+        return conn;
+    }
+
+    public static void desconectar() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
+    }
+
+    private static Properties carregarPropriedades() throws IOException {
+        Properties props = new Properties();
+        try (var inputStream = ConexaoBanco.class.getClassLoader().getResourceAsStream("database.properties")) {
+            if (inputStream == null) {
+                throw new IOException("Arquivo database.properties não encontrado no classpath!");
+            }
+            props.load(inputStream);
+        }
+        return props;
+    }
 }

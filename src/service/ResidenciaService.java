@@ -1,4 +1,4 @@
-package controller;
+package service;
 
 import dto.ResidenciaDTO;
 import model.Residencia;
@@ -9,11 +9,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ResidenciaController {
+public class ResidenciaService {
 
     private ResidenciaRep residenciaRep;
 
-    public ResidenciaController() {
+    public ResidenciaService() {
         this.residenciaRep = new ResidenciaRep();
     }
 
@@ -28,33 +28,7 @@ public class ResidenciaController {
         return residenciaDTO;
     }
 
-    public ResidenciaDTO atualizarResidencia(Long id, ResidenciaDTO residenciaDTO) throws SQLException, IOException {
-        Residencia existente = residenciaRep.buscarPorId(id);
-        if (existente != null) {
-            Residencia residencia = new Residencia(
-                id,
-                residenciaDTO.getNome(),
-                residenciaDTO.getEndereco()
-            );
-            residenciaRep.atualizar(residencia);
-            return residenciaDTO;
-        }
-        return null;
-    }
-
-    public ResidenciaDTO buscarResidencia(Long id) throws SQLException, IOException {
-        Residencia residencia = residenciaRep.buscarPorId(id);
-        if (residencia != null) {
-            return new ResidenciaDTO(
-                residencia.getId(),
-                residencia.getNome(),
-                residencia.getEndereco()
-            );
-        }
-        return null;
-    }
-
-    public List<ResidenciaDTO> buscarTodasResidencias() throws SQLException, IOException {
+    public List<ResidenciaDTO> listarResidencias() throws SQLException, IOException {
         return residenciaRep.buscarTodas().stream()
             .map(residencia -> new ResidenciaDTO(
                 residencia.getId(),

@@ -4,7 +4,10 @@ public class Comodo {
 
     private Long id;
     private String nome;
-    private Residencia residencia;
+    private Residencia residencia; // Referência direta à entidade Residencia
+
+    public Comodo() {
+    }
 
     public Comodo(Long id, String nome, Residencia residencia) {
         this.id = id;
@@ -35,5 +38,4 @@ public class Comodo {
     public void setResidencia(Residencia residencia) {
         this.residencia = residencia;
     }
-
 }

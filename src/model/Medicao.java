@@ -3,15 +3,18 @@ package model;
 import java.time.LocalDateTime;
 
 public class Medicao {
-    
+
     private Long id;
     private LocalDateTime dataHora;
     private int nivelSinal;
     private double velocidade;
     private String interferencia;
-    private Comodo comodo;
-    private Residencia residencia;
-    
+    private Comodo comodo; // Referência direta à entidade Comodo
+    private Residencia residencia; // Referência direta à entidade Residencia
+
+    public Medicao() {
+    }
+
     public Medicao(Long id, LocalDateTime dataHora, int nivelSinal, double velocidade, String interferencia, Comodo comodo, Residencia residencia) {
         this.id = id;
         this.dataHora = dataHora;
@@ -77,5 +80,4 @@ public class Medicao {
     public void setResidencia(Residencia residencia) {
         this.residencia = residencia;
     }
-
 }

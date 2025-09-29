@@ -1,13 +1,12 @@
 package model;
 
 public class Residencia {
-	
-	private Long id;
+
+    private Long id;
     private String nome;
     private String endereco;
 
     public Residencia() {
-    
     }
 
     public Residencia(Long id, String nome, String endereco) {
@@ -39,5 +38,4 @@ public class Residencia {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
-
 }

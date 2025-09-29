@@ -1,42 +1,115 @@
 package repository;
 
 import model.Comodo;
+import model.Residencia;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ComodoRep {
-    
-    private List<Comodo> comodos;
 
-    public ComodoRep() {
-        this.comodos = new ArrayList<>();
-    }
+    // Método para salvar um novo cômodo no banco de dados
+    public void salvar(Comodo comodo) throws SQLException, IOException {
+        String sql = "INSERT INTO comodo (nome, residencia_id) VALUES (?, ?)";
 
-    public void salvar(Comodo comodo) {
-        comodos.add(comodo);
-    }
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-    public Comodo buscarPorId(Long id) {
-        return comodos.stream()
-                      .filter(comodo -> comodo.getId().equals(id))
-                      .findFirst()
-                      .orElse(null);
-    }
+            stmt.setString(1, comodo.getNome());
+            stmt.setLong(2, comodo.getResidencia().getId());
+            stmt.executeUpdate();
 
-    public List<Comodo> buscarTodos() {
-        return new ArrayList<>(comodos);
-    }
-
-    public void atualizar(Comodo comodo) {
-        for (int i = 0; i < comodos.size(); i++) {
-            if (comodos.get(i).getId().equals(comodo.getId())) {
-                comodos.set(i, comodo);
-                return;
+            // Recupera o ID gerado automaticamente
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    comodo.setId(rs.getLong(1));
+                }
             }
         }
     }
 
-    public void deletar(Long id) {
-        comodos.removeIf(comodo -> comodo.getId().equals(id));
+    // Método para buscar um cômodo pelo ID
+    public Comodo buscarPorId(Long id) throws SQLException, IOException {
+        String sql = "SELECT c.id, c.nome, c.residencia_id, r.nome AS residencia_nome " +
+                     "FROM comodo c " +
+                     "JOIN residencia r ON c.residencia_id = r.id " +
+                     "WHERE c.id = ?";
+        Comodo comodo = null;
+
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Residencia residencia = new Residencia(
+                        rs.getLong("residencia_id"),
+                        rs.getString("residencia_nome"),
+                        null // Outros atributos de Residencia podem ser adicionados aqui
+                    );
+                    comodo = new Comodo(
+                        rs.getLong("id"),
+                        rs.getString("nome"),
+                        residencia
+                    );
+                }
+            }
+        }
+        return comodo;
+    }
+
+    // Método para buscar todos os cômodos
+    public List<Comodo> buscarTodos() throws SQLException, IOException {
+        String sql = "SELECT c.id, c.nome, c.residencia_id, r.nome AS residencia_nome " +
+                     "FROM comodo c " +
+                     "JOIN residencia r ON c.residencia_id = r.id";
+        List<Comodo> comodos = new ArrayList<>();
+
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Residencia residencia = new Residencia(
+                    rs.getLong("residencia_id"),
+                    rs.getString("residencia_nome"),
+                    null
+                );
+                Comodo comodo = new Comodo(
+                    rs.getLong("id"),
+                    rs.getString("nome"),
+                    residencia
+                );
+                comodos.add(comodo);
+            }
+        }
+        return comodos;
+    }
+
+    // Método para atualizar um cômodo
+    public void atualizar(Comodo comodo) throws SQLException, IOException {
+        String sql = "UPDATE comodo SET nome = ?, residencia_id = ? WHERE id = ?";
+
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, comodo.getNome());
+            stmt.setLong(2, comodo.getResidencia().getId());
+            stmt.setLong(3, comodo.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+    // Método para deletar um cômodo pelo ID
+    public void deletar(Long id) throws SQLException, IOException {
+        String sql = "DELETE FROM comodo WHERE id = ?";
+
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
     }
 }
