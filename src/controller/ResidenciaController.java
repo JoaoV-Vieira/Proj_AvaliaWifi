@@ -1,70 +1,37 @@
 package controller;
 
 import dto.ResidenciaDTO;
-import model.Residencia;
-import repository.ResidenciaRep;
+import service.ResidenciaService;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ResidenciaController {
 
-    private ResidenciaRep residenciaRep;
+    private ResidenciaService residenciaService;
 
     public ResidenciaController() {
-        this.residenciaRep = new ResidenciaRep();
+        this.residenciaService = new ResidenciaService();
     }
 
     public ResidenciaDTO criarResidencia(ResidenciaDTO residenciaDTO) throws SQLException, IOException {
-        Residencia residencia = new Residencia(
-            null,
-            residenciaDTO.getNome(),
-            residenciaDTO.getEndereco()
-        );
-        residenciaRep.salvar(residencia);
-        residenciaDTO.setId(residencia.getId());
-        return residenciaDTO;
+        return residenciaService.criarResidencia(residenciaDTO);
     }
 
     public ResidenciaDTO atualizarResidencia(Long id, ResidenciaDTO residenciaDTO) throws SQLException, IOException {
-        Residencia existente = residenciaRep.buscarPorId(id);
-        if (existente != null) {
-            Residencia residencia = new Residencia(
-                id,
-                residenciaDTO.getNome(),
-                residenciaDTO.getEndereco()
-            );
-            residenciaRep.atualizar(residencia);
-            return residenciaDTO;
-        }
-        return null;
+        return residenciaService.atualizarResidencia(id, residenciaDTO);
     }
 
     public ResidenciaDTO buscarResidencia(Long id) throws SQLException, IOException {
-        Residencia residencia = residenciaRep.buscarPorId(id);
-        if (residencia != null) {
-            return new ResidenciaDTO(
-                residencia.getId(),
-                residencia.getNome(),
-                residencia.getEndereco()
-            );
-        }
-        return null;
+        return residenciaService.buscarResidencia(id);
     }
 
-    public List<ResidenciaDTO> buscarTodasResidencias() throws SQLException, IOException {
-        return residenciaRep.buscarTodas().stream()
-            .map(residencia -> new ResidenciaDTO(
-                residencia.getId(),
-                residencia.getNome(),
-                residencia.getEndereco()
-            ))
-            .collect(Collectors.toList());
+    public List<ResidenciaDTO> listarResidencias() throws SQLException, IOException {
+        return residenciaService.listarResidencias();
     }
 
     public void deletarResidencia(Long id) throws SQLException, IOException {
-        residenciaRep.deletar(id);
+        residenciaService.deletarResidencia(id);
     }
 }

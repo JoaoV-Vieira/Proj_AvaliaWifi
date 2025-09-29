@@ -28,6 +28,32 @@ public class ResidenciaService {
         return residenciaDTO;
     }
 
+    public ResidenciaDTO atualizarResidencia(Long id, ResidenciaDTO residenciaDTO) throws SQLException, IOException {
+        Residencia existente = residenciaRep.buscarPorId(id);
+        if (existente != null) {
+            Residencia residencia = new Residencia(
+                id,
+                residenciaDTO.getNome(),
+                residenciaDTO.getEndereco()
+            );
+            residenciaRep.atualizar(residencia);
+            return residenciaDTO;
+        }
+        throw new SQLException("Residência com ID " + id + " não encontrada.");
+    }
+
+    public ResidenciaDTO buscarResidencia(Long id) throws SQLException, IOException {
+        Residencia residencia = residenciaRep.buscarPorId(id);
+        if (residencia != null) {
+            return new ResidenciaDTO(
+                residencia.getId(),
+                residencia.getNome(),
+                residencia.getEndereco()
+            );
+        }
+        throw new SQLException("Residência com ID " + id + " não encontrada.");
+    }
+
     public List<ResidenciaDTO> listarResidencias() throws SQLException, IOException {
         return residenciaRep.buscarTodas().stream()
             .map(residencia -> new ResidenciaDTO(
@@ -39,6 +65,11 @@ public class ResidenciaService {
     }
 
     public void deletarResidencia(Long id) throws SQLException, IOException {
-        residenciaRep.deletar(id);
+        Residencia existente = residenciaRep.buscarPorId(id);
+        if (existente != null) {
+            residenciaRep.deletar(id);
+        } else {
+            throw new SQLException("Residência com ID " + id + " não encontrada.");
+        }
     }
 }

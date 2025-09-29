@@ -1,42 +1,29 @@
 package controller;
 
-import model.Medicao;
-import repository.MedicaoRep;
+import dto.MedicaoDTO;
+import service.MedicaoService;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 public class MedicaoController {
 
-    private MedicaoRep medicaoRep;
+    private MedicaoService medicaoService;
 
     public MedicaoController() {
-        this.medicaoRep = new MedicaoRep();
+        this.medicaoService = new MedicaoService();
     }
 
-    public Medicao criarMedicao(Medicao medicao) throws SQLException, IOException {
-        medicaoRep.salvar(medicao);
-        return medicao;
+    public MedicaoDTO criarMedicao(MedicaoDTO medicaoDTO) throws SQLException, IOException {
+        return medicaoService.criarMedicao(medicaoDTO);
     }
 
-    public Medicao atualizarMedicao(Long id, Medicao medicao) throws SQLException, IOException {
-        Medicao existente = medicaoRep.buscarPorId(id);
-        if (existente != null) {
-            medicaoRep.atualizar(medicao);
-            return medicao;
-        }
-        return null;
-    }
-
-    public Medicao buscarMedicao(Long id) throws SQLException, IOException {
-        return medicaoRep.buscarPorId(id);
-    }
-
-    public List<Medicao> buscarTodasMedicoes() throws SQLException, IOException {
-        return medicaoRep.buscarTodas();
+    public List<MedicaoDTO> listarMedicoes() throws SQLException, IOException {
+        return medicaoService.listarMedicoes();
     }
 
     public void deletarMedicao(Long id) throws SQLException, IOException {
-        medicaoRep.deletar(id);
+        medicaoService.deletarMedicao(id);
     }
 }

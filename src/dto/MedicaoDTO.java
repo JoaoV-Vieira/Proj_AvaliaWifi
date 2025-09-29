@@ -9,8 +9,8 @@ public class MedicaoDTO {
     private int nivelSinal;
     private double velocidade;
     private String interferencia;
-    private Long comodoId; // Apenas o ID do cômodo
-    private Long residenciaId; // Apenas o ID da residência
+    private Long comodoId;
+    private Long residenciaId;
 
     public MedicaoDTO() {
     }

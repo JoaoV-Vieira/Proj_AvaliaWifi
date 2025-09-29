@@ -9,8 +9,8 @@ public class Medicao {
     private int nivelSinal;
     private double velocidade;
     private String interferencia;
-    private Comodo comodo; // Referência direta à entidade Comodo
-    private Residencia residencia; // Referência direta à entidade Residencia
+    private Comodo comodo;
+    private Residencia residencia;
 
     public Medicao() {
     }

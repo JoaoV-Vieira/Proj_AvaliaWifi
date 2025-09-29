@@ -1,70 +1,37 @@
 package controller;
 
 import dto.ComodoDTO;
-import model.Comodo;
-import model.Residencia;
-import repository.ComodoRep;
+import service.ComodoService;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ComodoController {
 
-    private ComodoRep comodoRep;
+    private ComodoService comodoService;
 
     public ComodoController() {
-        this.comodoRep = new ComodoRep();
+        this.comodoService = new ComodoService();
     }
 
     public ComodoDTO criarComodo(ComodoDTO comodoDTO) throws SQLException, IOException {
-        Comodo comodo = new Comodo(
-            null,
-            comodoDTO.getNome(),
-            new Residencia(comodoDTO.getResidenciaId(), null, null)
-        );
-        comodoRep.salvar(comodo);
-        comodoDTO.setId(comodo.getId());
-        return comodoDTO;
+        return comodoService.criarComodo(comodoDTO);
     }
 
     public ComodoDTO atualizarComodo(Long id, ComodoDTO comodoDTO) throws SQLException, IOException {
-        Comodo existente = comodoRep.buscarPorId(id);
-        if (existente != null) {
-            Comodo comodo = new Comodo(
-                id,
-                comodoDTO.getNome(),
-                new Residencia(comodoDTO.getResidenciaId(), null, null)
-            );
-            comodoRep.atualizar(comodo);
-            return comodoDTO;
-        }
-        return null;
+        return comodoService.atualizarComodo(id, comodoDTO);
     }
 
     public ComodoDTO buscarComodo(Long id) throws SQLException, IOException {
-        Comodo comodo = comodoRep.buscarPorId(id);
-        if (comodo != null) {
-            return new ComodoDTO(
-                comodo.getId(),
-                comodo.getNome(),
-                comodo.getResidencia().getId()
-            );
-        }
-        return null;
+        return comodoService.buscarComodo(id);
     }
 
     public List<ComodoDTO> buscarTodosComodos() throws SQLException, IOException {
-        return comodoRep.buscarTodos().stream()
-            .map(comodo -> new ComodoDTO(
-                comodo.getId(),
-                comodo.getNome(),
-                comodo.getResidencia().getId()
-            ))
-            .collect(Collectors.toList());
+        return comodoService.listarComodos();
     }
 
     public void deletarComodo(Long id) throws SQLException, IOException {
-        comodoRep.deletar(id);
+        comodoService.deletarComodo(id);
     }
 }

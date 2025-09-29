@@ -29,6 +29,32 @@ public class ComodoService {
         return comodoDTO;
     }
 
+    public ComodoDTO atualizarComodo(Long id, ComodoDTO comodoDTO) throws SQLException, IOException {
+        Comodo existente = comodoRep.buscarPorId(id);
+        if (existente != null) {
+            Comodo comodo = new Comodo(
+                id,
+                comodoDTO.getNome(),
+                new Residencia(comodoDTO.getResidenciaId(), null, null)
+            );
+            comodoRep.atualizar(comodo);
+            return comodoDTO;
+        }
+        return null;
+    }
+
+    public ComodoDTO buscarComodo(Long id) throws SQLException, IOException {
+        Comodo comodo = comodoRep.buscarPorId(id);
+        if (comodo != null) {
+            return new ComodoDTO(
+                comodo.getId(),
+                comodo.getNome(),
+                comodo.getResidencia().getId()
+            );
+        }
+        return null;
+    }
+
     public List<ComodoDTO> listarComodos() throws SQLException, IOException {
         return comodoRep.buscarTodos().stream()
             .map(comodo -> new ComodoDTO(

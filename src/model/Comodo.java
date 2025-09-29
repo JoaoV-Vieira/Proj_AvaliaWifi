@@ -4,7 +4,7 @@ public class Comodo {
 
     private Long id;
     private String nome;
-    private Residencia residencia; // Referência direta à entidade Residencia
+    private Residencia residencia;
 
     public Comodo() {
     }
