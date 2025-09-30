@@ -11,21 +11,36 @@ public class ComodoRep {
 
     // Método para salvar um novo cômodo no banco de dados
     public void salvar(Comodo comodo) throws SQLException, IOException {
-        String sql = "INSERT INTO comodo (nome, residencia_id) VALUES (?, ?)";
+        // Se o ID não foi definido, usar o próximo ID disponível
+        if (comodo.getId() == null) {
+            Long proximoId = obterProximoId();
+            comodo.setId(proximoId);
+        }
+        
+        String sql = "INSERT INTO comodo (id, nome, residencia_id) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexaoBanco.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, comodo.getNome());
-            stmt.setLong(2, comodo.getResidencia().getId());
+            stmt.setLong(1, comodo.getId());
+            stmt.setString(2, comodo.getNome());
+            stmt.setLong(3, comodo.getResidencia().getId());
             stmt.executeUpdate();
-
-            // Recupera o ID gerado automaticamente
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    comodo.setId(rs.getLong(1));
-                }
+        }
+    }
+    
+    // Método auxiliar para obter o próximo ID disponível
+    private Long obterProximoId() throws SQLException, IOException {
+        String sql = "SELECT COALESCE(MAX(id), 0) + 1 FROM comodo";
+        
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getLong(1);
             }
+            return 1L;
         }
     }
 
@@ -47,7 +62,7 @@ public class ComodoRep {
                         rs.getLong("residencia_id"),
                         rs.getString("residencia_nome"),
                         rs.getString("residencia_cliente"),
-                        null // Outros atributos de Residencia podem ser adicionados aqui
+                        null
                     );
                     comodo = new Comodo(
                         rs.getLong("id"),

@@ -10,22 +10,37 @@ public class ResidenciaRep {
 
     // Método para salvar uma nova residência no banco de dados
     public void salvar(Residencia residencia) throws SQLException, IOException {
-        String sql = "INSERT INTO residencia (nome, endereco, cliente) VALUES (?, ?, ?)";
+        // Se o ID não foi definido, usar o próximo ID disponível
+        if (residencia.getId() == null) {
+            Long proximoId = obterProximoId();
+            residencia.setId(proximoId);
+        }
+        
+        String sql = "INSERT INTO residencia (id, nome, endereco, cliente) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConexaoBanco.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, residencia.getNome());
-            stmt.setString(2, residencia.getEndereco());
-            stmt.setString(3, residencia.getCliente());
+            stmt.setLong(1, residencia.getId());
+            stmt.setString(2, residencia.getNome());
+            stmt.setString(3, residencia.getEndereco());
+            stmt.setString(4, residencia.getCliente());
             stmt.executeUpdate();
-
-            // Recupera o ID gerado automaticamente
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    residencia.setId(rs.getLong(1));
-                }
+        }
+    }
+    
+    // Método auxiliar para obter o próximo ID disponível
+    private Long obterProximoId() throws SQLException, IOException {
+        String sql = "SELECT COALESCE(MAX(id), 0) + 1 FROM residencia";
+        
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getLong(1);
             }
+            return 1L;
         }
     }
 

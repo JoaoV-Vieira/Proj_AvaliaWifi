@@ -13,26 +13,41 @@ public class MedicaoRep {
 
     // Método para salvar uma nova medição no banco de dados
     public void salvar(Medicao medicao) throws SQLException, IOException {
-        String sql = "INSERT INTO medicao (data_hora, nivel_sinal, velocidade, interferencia, banda, comodo_id, residencia_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Se o ID não foi definido, usar o próximo ID disponível
+        if (medicao.getId() == null) {
+            Long proximoId = obterProximoId();
+            medicao.setId(proximoId);
+        }
+        
+        String sql = "INSERT INTO medicao (id, data_hora, nivel_sinal, velocidade, interferencia, banda, comodo_id, residencia_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConexaoBanco.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setTimestamp(1, Timestamp.valueOf(medicao.getDataHora()));
-            stmt.setInt(2, medicao.getNivelSinal());
-            stmt.setDouble(3, medicao.getVelocidade());
-            stmt.setString(4, medicao.getInterferencia());
-            stmt.setString(5, medicao.getBanda());
-            stmt.setLong(6, medicao.getComodo().getId());
-            stmt.setLong(7, medicao.getResidencia().getId());
+            stmt.setLong(1, medicao.getId());
+            stmt.setTimestamp(2, Timestamp.valueOf(medicao.getDataHora()));
+            stmt.setInt(3, medicao.getNivelSinal());
+            stmt.setDouble(4, medicao.getVelocidade());
+            stmt.setString(5, medicao.getInterferencia());
+            stmt.setString(6, medicao.getBanda());
+            stmt.setLong(7, medicao.getComodo().getId());
+            stmt.setLong(8, medicao.getResidencia().getId());
             stmt.executeUpdate();
-
-            // Recupera o ID gerado automaticamente
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    medicao.setId(rs.getLong(1));
-                }
+        }
+    }
+    
+    // Método auxiliar para obter o próximo ID disponível
+    private Long obterProximoId() throws SQLException, IOException {
+        String sql = "SELECT COALESCE(MAX(id), 0) + 1 FROM medicao";
+        
+        try (Connection conn = ConexaoBanco.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getLong(1);
             }
+            return 1L;
         }
     }
 
@@ -79,7 +94,7 @@ public class MedicaoRep {
                     rs.getInt("nivel_sinal"),
                     rs.getDouble("velocidade"),
                     rs.getString("interferencia"),
-                    rs.getString("banda"), // Nova coluna
+                    rs.getString("banda"),
                     new Comodo(rs.getLong("comodo_id"), null, null),
                     new Residencia(rs.getLong("residencia_id"), null, null, null)
                 );
