@@ -56,7 +56,7 @@ echo [INFO] Copiando resources...
 xcopy "src\resources" "bin\resources\" /E /I /Y >nul 2>&1
 copy "src\database.properties" "bin\" >nul 2>&1
 
-echo [INFO] Iniciando aplicação JavaFX...
+echo [INFO] Iniciando aplicacao JavaFX...
 echo.
 java -cp "bin;java-libs\jdbc-connectors\postgresql-42.7.8.jar;java-libs\javafx\lib\*" ^
     --module-path "java-libs\javafx\lib" ^
@@ -65,7 +65,7 @@ java -cp "bin;java-libs\jdbc-connectors\postgresql-42.7.8.jar;java-libs\javafx\l
 
 if %errorlevel% neq 0 (
     echo.
-    echo [ERRO] Falha ao executar a aplicação.
+    echo [ERRO] Falha ao executar a aplicacao.
     echo        Verifique se o PostgreSQL está rodando e as configurações estão corretas.
 )
 

@@ -10,7 +10,7 @@ Esta é a interface gráfica do sistema AvaliaWiFi, desenvolvida em JavaFX. A in
 ```
 src/
 ├── view/
-│   ├── AvaliaWifiApplication.java     # Aplicação principal JavaFX
+│   ├── AvaliaWifiApplication.java     # aplicacao principal JavaFX
 │   └── controller/                    # Controllers das views
 │       ├── MainViewController.java    # Controller principal
 │       ├── ResidenciaDialogController.java
@@ -59,7 +59,7 @@ src/
 
 ### ✅ Dependency Injection via Application
 ```java
-// Controllers acessam services através da aplicação principal
+// Controllers acessam services através da aplicacao principal
 ResidenciaService residenciaService = AvaliaWifiApplication.getResidenciaService();
 ```
 

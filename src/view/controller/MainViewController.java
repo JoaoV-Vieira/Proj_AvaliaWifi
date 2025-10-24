@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
-    // Services (acessados via aplicação principal)
+    // Services (acessados via aplicacao principal)
     private ResidenciaService residenciaService;
     private ComodoService comodoService;
     private MedicaoService medicaoService;
@@ -221,7 +221,7 @@ public class MainViewController implements Initializable {
     private void carregarComodosPorResidencia(Long residenciaId) {
         try {
             List<ComodoDTO> comodos = comodoService.listarComodos();
-            // Filtrar por residência no lado da aplicação
+            // Filtrar por residência no lado da aplicacao
             List<ComodoDTO> comodosFiltrados = comodos.stream()
                 .filter(c -> c.getResidenciaId().equals(residenciaId))
                 .collect(java.util.stream.Collectors.toList());

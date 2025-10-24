@@ -6,7 +6,7 @@
 ```
 src/
 ├── view/                                  # 🆕 Pacote da interface gráfica
-│   ├── AvaliaWifiApplication.java         # 🆕 Aplicação principal JavaFX
+│   ├── AvaliaWifiApplication.java         # 🆕 aplicacao principal JavaFX
 │   └── controller/                        # 🆕 Controllers das views
 │       ├── MainViewController.java        # 🆕 Controller principal (4 abas)
 │       ├── ResidenciaDialogController.java# 🆕 Dialog para residências
@@ -36,7 +36,7 @@ src/
 
 ### ✅ **Padrões Aplicados**
 - **MVC (Model-View-Controller)**: Separação clara de camadas
-- **Dependency Injection**: Services injetados via aplicação principal
+- **Dependency Injection**: Services injetados via aplicacao principal
 - **Observer Pattern**: Listeners para atualização de dados
 - **Command Pattern**: Handlers para ações dos botões
 
@@ -128,7 +128,7 @@ RelatorioService relatorioService = AvaliaWifiApplication.getRelatorioService();
 
 ### ✅ **Concluído**
 - [x] Estrutura de pacotes `view/`
-- [x] Aplicação principal JavaFX
+- [x] aplicacao principal JavaFX
 - [x] 4 Controllers com funcionalidades completas
 - [x] 4 Arquivos FXML para interfaces
 - [x] Integração com services existentes
