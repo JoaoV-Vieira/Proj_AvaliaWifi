@@ -9,7 +9,7 @@ public class MedicaoDTO {
     private int nivelSinal;
     private double velocidade;
     private String interferencia;
-    private String banda; // Nova coluna para a banda do Wi-Fi
+    private String banda;
     private Long comodoId;
     private Long residenciaId;
 

@@ -5,7 +5,7 @@ public class ResidenciaDTO {
     private Long id;
     private String nome;
     private String endereco;
-    private String cliente; // Nova coluna para o cliente
+    private String cliente;
 
     public ResidenciaDTO() {
     }

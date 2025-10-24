@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.controller.MainViewController">
+   <top>
+      <VBox>
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="Arquivo">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Sair" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Ajuda">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Sobre" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 10px;" text="Sistema AvaliaWiFi - Monitoramento de Redes Wi-Fi" />
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Residências">
+            <content>
+               <VBox spacing="10.0">
+                  <children>
+                     <HBox spacing="10.0">
+                        <children>
+                           <Button fx:id="btnNovaResidencia" mnemonicParsing="false" onAction="#handleNovaResidencia" text="Nova Residência" />
+                           <Button fx:id="btnEditarResidencia" mnemonicParsing="false" onAction="#handleEditarResidencia" text="Editar" />
+                           <Button fx:id="btnExcluirResidencia" mnemonicParsing="false" onAction="#handleExcluirResidencia" text="Excluir" />
+                        </children>
+                        <padding>
+                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </padding>
+                     </HBox>
+                     <TableView fx:id="residenciaTable" VBox.vgrow="ALWAYS">
+                       <columns>
+                         <TableColumn fx:id="residenciaIdColumn" prefWidth="50.0" text="ID" />
+                         <TableColumn fx:id="residenciaNomeColumn" prefWidth="200.0" text="Nome" />
+                           <TableColumn fx:id="residenciaEnderecoColumn" prefWidth="300.0" text="Endereço" />
+                           <TableColumn fx:id="residenciaClienteColumn" prefWidth="200.0" text="Cliente" />
+                       </columns>
+                     </TableView>
+                  </children>
+                  <padding>
+                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  </padding>
+               </VBox>
+            </content>
+          </Tab>
+          <Tab text="Cômodos">
+            <content>
+               <VBox spacing="10.0">
+                  <children>
+                     <HBox spacing="10.0">
+                        <children>
+                           <Label text="Residência:" />
+                           <ComboBox fx:id="residenciaComboBox" prefWidth="200.0" promptText="Selecione uma residência" />
+                        </children>
+                        <padding>
+                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </padding>
+                     </HBox>
+                     <HBox spacing="10.0">
+                        <children>
+                           <Button fx:id="btnNovoComodo" mnemonicParsing="false" onAction="#handleNovoComodo" text="Novo Cômodo" />
+                           <Button fx:id="btnEditarComodo" mnemonicParsing="false" onAction="#handleEditarComodo" text="Editar" />
+                           <Button fx:id="btnExcluirComodo" mnemonicParsing="false" onAction="#handleExcluirComodo" text="Excluir" />
+                        </children>
+                        <padding>
+                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </padding>
+                     </HBox>
+                     <TableView fx:id="comodoTable" VBox.vgrow="ALWAYS">
+                       <columns>
+                         <TableColumn fx:id="comodoIdColumn" prefWidth="50.0" text="ID" />
+                         <TableColumn fx:id="comodoNomeColumn" prefWidth="200.0" text="Nome" />
+                           <TableColumn fx:id="comodoResidenciaColumn" prefWidth="100.0" text="Residência ID" />
+                       </columns>
+                     </TableView>
+                  </children>
+                  <padding>
+                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  </padding>
+               </VBox>
+            </content>
+          </Tab>
+            <Tab text="Medições">
+              <content>
+                 <VBox spacing="10.0">
+                    <children>
+                       <HBox spacing="10.0">
+                          <children>
+                             <Label text="Residência:" />
+                             <ComboBox fx:id="residenciaMedicaoComboBox" prefWidth="150.0" promptText="Selecione" />
+                             <Label text="Cômodo:" />
+                             <ComboBox fx:id="comodoMedicaoComboBox" prefWidth="150.0" promptText="Selecione" />
+                          </children>
+                          <padding>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </padding>
+                       </HBox>
+                       <HBox spacing="10.0">
+                          <children>
+                             <Button fx:id="btnNovaMedicao" mnemonicParsing="false" onAction="#handleNovaMedicao" text="Nova Medição" />
+                             <Button fx:id="btnEditarMedicao" mnemonicParsing="false" onAction="#handleEditarMedicao" text="Editar" />
+                             <Button fx:id="btnExcluirMedicao" mnemonicParsing="false" onAction="#handleExcluirMedicao" text="Excluir" />
+                          </children>
+                          <padding>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </padding>
+                       </HBox>
+                       <TableView fx:id="medicaoTable" VBox.vgrow="ALWAYS">
+                         <columns>
+                           <TableColumn fx:id="medicaoIdColumn" prefWidth="50.0" text="ID" />
+                           <TableColumn fx:id="medicaoDataColumn" prefWidth="150.0" text="Data/Hora" />
+                             <TableColumn fx:id="medicaoSinalColumn" prefWidth="80.0" text="Sinal (dBm)" />
+                             <TableColumn fx:id="medicaoVelocidadeColumn" prefWidth="100.0" text="Velocidade (Mbps)" />
+                             <TableColumn fx:id="medicaoInterferenciaColumn" prefWidth="100.0" text="Interferência" />
+                             <TableColumn fx:id="medicaoBandaColumn" prefWidth="80.0" text="Banda" />
+                             <TableColumn fx:id="medicaoComodoColumn" prefWidth="100.0" text="Cômodo ID" />
+                         </columns>
+                       </TableView>
+                    </children>
+                    <padding>
+                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                 </VBox>
+              </content>
+            </Tab>
+            <Tab text="Relatórios">
+              <content>
+                 <VBox spacing="10.0">
+                    <children>
+                       <HBox spacing="10.0">
+                          <children>
+                             <Label text="Residência:" />
+                             <ComboBox fx:id="residenciaRelatorioComboBox" prefWidth="200.0" promptText="Selecione uma residência" />
+                             <Button fx:id="btnGerarRelatorio" mnemonicParsing="false" onAction="#handleGerarRelatorio" text="Gerar Relatório" />
+                             <Button fx:id="btnExportarRelatorio" mnemonicParsing="false" onAction="#handleExportarRelatorio" text="Exportar" />
+                          </children>
+                          <padding>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </padding>
+                       </HBox>
+                       <TextArea fx:id="relatorioTextArea" prefHeight="400.0" VBox.vgrow="ALWAYS" />
+                    </children>
+                    <padding>
+                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                 </VBox>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <bottom>
+      <HBox>
+         <children>
+            <Label text="AvaliaWiFi v1.0 - Sistema de Monitoramento de Redes Wi-Fi" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+</BorderPane>

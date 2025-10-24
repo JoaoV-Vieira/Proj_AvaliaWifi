@@ -50,6 +50,25 @@ public class MedicaoService {
             .collect(Collectors.toList());
     }
 
+    public MedicaoDTO atualizarMedicao(Long id, MedicaoDTO medicaoDTO) throws SQLException, IOException {
+        Medicao existente = medicaoRep.buscarPorId(id);
+        if (existente != null) {
+            Medicao medicao = new Medicao(
+                id,
+                medicaoDTO.getDataHora(),
+                medicaoDTO.getNivelSinal(),
+                medicaoDTO.getVelocidade(),
+                medicaoDTO.getInterferencia(),
+                medicaoDTO.getBanda(),
+                new Comodo(medicaoDTO.getComodoId(), null, null),
+                new Residencia(medicaoDTO.getResidenciaId(), null, null, null)
+            );
+            medicaoRep.atualizar(medicao);
+            return medicaoDTO;
+        }
+        return null;
+    }
+
     public void deletarMedicao(Long id) throws SQLException, IOException {
         medicaoRep.deletar(id);
     }
