@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Gerenciar Cômodos - AvaliaWiFi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-wifi me-2"></i>AvaliaWiFi
+            </a>
+            <ul class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/residencias}">
+                    <i class="fas fa-home me-1"></i>Residências
+                </a>
+                <a class="nav-link active" th:href="@{/comodos}">
+                    <i class="fas fa-door-open me-1"></i>Cômodos
+                </a>
+                <a class="nav-link" th:href="@{/medicoes}">
+                    <i class="fas fa-signal me-1"></i>Medições
+                </a>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-door-open me-2"></i>Gerenciar Cômodos
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Filtro por Residência -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="filtroResidencia" class="form-label">
+                                    <i class="fas fa-filter me-2"></i>Filtrar por Residência:
+                                </label>
+                                <select id="filtroResidencia" class="form-select" onchange="filtrarPorResidencia()">
+                                    <option value="">Todas as Residências</option>
+                                    <option th:each="residencia : ${residencias}" 
+                                            th:value="${residencia.id}" 
+                                            th:text="${residencia.nome + ' - ' + residencia.cliente}"
+                                            th:selected="${residenciaSelecionada != null && residenciaSelecionada == residencia.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Mensagens de feedback -->
+                        <div th:if="${sucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${sucesso}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span th:text="${erro}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <!-- Modal de Confirmação -->
+                        <div th:if="${confirmacao}" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" id="confirmacaoModal">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-danger">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>Confirmação de Exclusão
+                                        </h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="mb-3" th:text="${confirmacao}" style="white-space: pre-line;"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form method="post" th:action="${confirmarUrl}" class="d-inline">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-trash me-2"></i>Sim, Excluir
+                                            </button>
+                                        </form>
+                                        <a href="/avaliawifi/comodos" class="btn btn-secondary">
+                                            <i class="fas fa-times me-2"></i>Cancelar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <p class="mb-0">Configure os cômodos das residências com suas dimensões</p>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#novoComodoModal">
+                                <i class="fas fa-plus me-2"></i>Novo Cômodo
+                            </button>
+                        </div>
+
+                        <!-- Lista de Cômodos -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Residência</th>
+                                        <th>Largura (m)</th>
+                                        <th>Comprimento (m)</th>
+                                        <th>Área (m²)</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaComodos">
+                                    <tr th:if="${#lists.isEmpty(comodos)}">
+                                        <td colspan="7" class="text-center text-muted">
+                                            <i class="fas fa-door-open fa-3x mb-3"></i>
+                                            <p>Nenhum cômodo cadastrado ainda.</p>
+                                            <p>Clique em "Novo Cômodo" para começar.</p>
+                                        </td>
+                                    </tr>
+                                    <tr th:each="comodo : ${comodos}">
+                                        <td th:text="${comodo.id}"></td>
+                                        <td th:text="${comodo.nome}"></td>
+                                        <td th:text="${comodo.residencia.nome}"></td>
+                                        <td th:text="${comodo.largura}"></td>
+                                        <td th:text="${comodo.comprimento}"></td>
+                                        <td th:text="${#numbers.formatDecimal(comodo.largura * comodo.comprimento, 1, 1)}"></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info me-1 btn-visualizar" title="Visualizar" 
+                                                    th:attr="data-id=${comodo.id}, data-nome=${comodo.nome}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning me-1 btn-editar" title="Editar"
+                                                    th:attr="data-id=${comodo.id}, data-nome=${comodo.nome}, data-largura=${comodo.largura}, data-comprimento=${comodo.comprimento}, data-residencia-id=${comodo.residencia.id}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-excluir" title="Excluir"
+                                                    th:attr="data-id=${comodo.id}, data-nome=${comodo.nome}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Cômodo -->
+    <div class="modal fade" id="novoComodoModal" tabindex="-1" aria-labelledby="novoComodoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="novoComodoModalLabel">
+                        <i class="fas fa-door-open me-2"></i>Novo Cômodo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formNovoComodo">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="residencia" class="form-label">Residência</label>
+                            <select class="form-select" id="residencia" name="residencia" required>
+                                <option value="">Selecione uma residência</option>
+                                <!-- Opções serão carregadas dinamicamente -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nomeComodo" class="form-label">Nome do Cômodo</label>
+                            <input type="text" class="form-control" id="nomeComodo" name="nome" required>
+                            <div class="form-text">Ex: Sala de estar, Quarto 1, Cozinha, etc.</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="largura" class="form-label">Largura (metros)</label>
+                                    <input type="number" class="form-control" id="largura" name="largura" step="0.1" min="0.1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="comprimento" class="form-label">Comprimento (metros)</label>
+                                    <input type="number" class="form-control" id="comprimento" name="comprimento" step="0.1" min="0.1" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Dica:</strong> Meça as dimensões do cômodo com uma trena para obter medidas precisas.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal Editar Cômodo -->
+    <div class="modal fade" id="editarComodoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>Editar Cômodo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formEditarComodo" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="editComodoId" name="id">
+                        <div class="mb-3">
+                            <label for="editComodoNome" class="form-label">Nome do Cômodo</label>
+                            <input type="text" class="form-control" id="editComodoNome" name="nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editComodoLargura" class="form-label">Largura (metros)</label>
+                            <input type="number" step="0.1" class="form-control" id="editComodoLargura" name="largura" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editComodoComprimento" class="form-label">Comprimento (metros)</label>
+                            <input type="number" step="0.1" class="form-control" id="editComodoComprimento" name="comprimento" required>
+                        </div>
+                        <input type="hidden" id="editComodoResidenciaId" name="residenciaId">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>Atualizar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Cômodo -->
+    <div class="modal fade" id="visualizarComodoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-eye me-2"></i>Estatísticas do Cômodo: <span id="nomeComodoVisualizar"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="estatisticasContainer">
+                        <div class="text-center">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                            <p>Carregando estatísticas...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação Exclusão -->
+    <div class="modal fade" id="confirmarExclusaoComodoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmação de Exclusão
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensagemExclusaoComodo"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmarExclusaoComodoBtn">
+                        <i class="fas fa-trash me-2"></i>Sim, Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let comodoParaExcluir = null;
+
+        function filtrarPorResidencia() {
+            const select = document.getElementById('filtroResidencia');
+            const residenciaId = select.value;
+            
+            if (residenciaId) {
+                window.location.href = '/avaliawifi/comodos?residenciaId=' + residenciaId;
+            } else {
+                window.location.href = '/avaliawifi/comodos';
+            }
+        }
+
+        // Event listeners para os botões usando event delegation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botões visualizar
+            document.querySelectorAll('.btn-visualizar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const nome = this.getAttribute('data-nome');
+                    visualizarComodo(id, nome);
+                });
+            });
+
+            // Botões editar
+            document.querySelectorAll('.btn-editar').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const nome = this.getAttribute('data-nome');
+                    const largura = this.getAttribute('data-largura');
+                    const comprimento = this.getAttribute('data-comprimento');
+                    const residenciaId = this.getAttribute('data-residencia-id');
+                    editarComodo(id, nome, largura, comprimento, residenciaId);
+                });
+            });
+
+            // Botões excluir
+            document.querySelectorAll('.btn-excluir').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const nome = this.getAttribute('data-nome');
+                    excluirComodo(id, nome);
+                });
+            });
+        });
+
+        // Função para visualizar cômodo
+        function visualizarComodo(id, nome) {
+            document.getElementById('nomeComodoVisualizar').textContent = nome;
+            const estatisticasContainer = document.getElementById('estatisticasContainer');
+            
+            estatisticasContainer.innerHTML = `
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                    <p>Carregando estatísticas...</p>
+                </div>
+            `;
+            
+            fetch(`/avaliawifi/api/medicoes/estatisticas/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let html = '<div class="row">';
+                    
+                    if (data.totalMedicoes === 0) {
+                        html += `
+                            <div class="col-12 text-center">
+                                <i class="fas fa-signal fa-3x mb-3 text-muted"></i>
+                                <p>Nenhuma medição registrada para este cômodo.</p>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Total de Medições</h6>
+                                        <h3 class="text-primary">${data.totalMedicoes}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Intensidade Média</h6>
+                                        <h3 class="text-info">${data.mediaIntensidade.toFixed(1)} dBm</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Sinal Forte</h6>
+                                        <h4 class="text-success">${data.sinalForte}</h4>
+                                        <small class="text-muted">≥ -50 dBm</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Sinal Médio</h6>
+                                        <h4 class="text-warning">${data.sinalMedio}</h4>
+                                        <small class="text-muted">-50 a -70 dBm</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-3">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6 class="card-title">Sinal Fraco</h6>
+                                        <h4 class="text-danger">${data.sinalFraco}</h4>
+                                        <small class="text-muted">< -70 dBm</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    html += '</div>';
+                    estatisticasContainer.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Erro detalhado:', error);
+                    estatisticasContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Erro ao carregar estatísticas:</strong><br>
+                            ${error.message}<br>
+                            <small class="mt-2 d-block">
+                                <strong>Possíveis causas:</strong><br>
+                                • Verifique se a aplicação está rodando em http://localhost:8080/avaliawifi<br>
+                                • Verifique se o ID do cômodo (${id}) existe no banco de dados<br>
+                                • Verifique o console do navegador (F12) para mais detalhes
+                            </small>
+                        </div>
+                    `;
+                });
+            
+            new bootstrap.Modal(document.getElementById('visualizarComodoModal')).show();
+        }
+
+        // Função para editar cômodo
+        function editarComodo(id, nome, largura, comprimento, residenciaId) {
+            document.getElementById('editComodoId').value = id;
+            document.getElementById('editComodoNome').value = nome;
+            document.getElementById('editComodoLargura').value = largura;
+            document.getElementById('editComodoComprimento').value = comprimento;
+            document.getElementById('editComodoResidenciaId').value = residenciaId;
+            document.getElementById('formEditarComodo').action = `/avaliawifi/comodos/editar/${id}`;
+            
+            new bootstrap.Modal(document.getElementById('editarComodoModal')).show();
+        }
+
+        // Função para excluir cômodo
+        function excluirComodo(id, nome) {
+            comodoParaExcluir = id;
+            document.getElementById('mensagemExclusaoComodo').innerHTML = `
+                <strong>ATENÇÃO:</strong> Ao excluir o cômodo "<strong>${nome}</strong>" serão também excluídas:
+                <ul class="mt-2">
+                    <li>Todas as medições deste cômodo</li>
+                </ul>
+                <p class="text-danger mt-3"><strong>Esta ação NÃO PODE SER DESFEITA!</strong></p>
+                <p>Tem certeza que deseja continuar?</p>
+            `;
+            
+            new bootstrap.Modal(document.getElementById('confirmarExclusaoComodoModal')).show();
+        }
+
+        // Confirmar exclusão
+        document.getElementById('confirmarExclusaoComodoBtn').addEventListener('click', function() {
+            if (comodoParaExcluir) {
+                const form = document.createElement('form');
+                form.method = 'post';
+                form.action = `/avaliawifi/comodos/deletar/${comodoParaExcluir}?confirmar=true`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+        // Atualizar página em tempo real
+        function atualizarPagina() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        }
+
+        // Form de novo cômodo
+        document.getElementById('formNovoComodo').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/avaliawifi/comodos', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('novoComodoModal')).hide();
+                    this.reset();
+                    atualizarPagina();
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+
+        // Form de editar cômodo
+        document.getElementById('formEditarComodo').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('editarComodoModal')).hide();
+                    atualizarPagina();
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        });
+    </script>
+</body>
+</html>

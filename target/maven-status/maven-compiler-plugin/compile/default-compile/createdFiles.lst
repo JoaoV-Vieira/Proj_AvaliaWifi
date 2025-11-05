@@ -1,0 +1,9 @@
+br\com\utfpr\avaliawifi\config\DataInitializer.class
+br\com\utfpr\avaliawifi\entity\Medicao.class
+br\com\utfpr\avaliawifi\repository\MedicaoRepository.class
+br\com\utfpr\avaliawifi\repository\ComodoRepository.class
+br\com\utfpr\avaliawifi\AvaliaWifiApplication.class
+br\com\utfpr\avaliawifi\entity\Residencia.class
+br\com\utfpr\avaliawifi\entity\Comodo.class
+br\com\utfpr\avaliawifi\controller\HomeController.class
+br\com\utfpr\avaliawifi\repository\ResidenciaRepository.class

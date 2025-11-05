@@ -1,58 +1,23 @@
-# AvaliaWiFi - Sistema Web de Monitoramento WiFi
+# 📡 AvaliaWifi - Sistema de Monitoramento de Redes Wi-Fi
 
-## 🚀 Como Executar
+Sistema desenvolvido em Java para monitoramento e análise da qualidade de sinais Wi-Fi em residências, permitindo o cadastro de cômodos e medições detalhadas de conectividade.
 
-### Opção 1: JAR Executável (Recomendado)
-```bash
-java -jar target/avaliawifi-web-1.0.0.jar
-```
+## 🚀 Funcionalidades
 
-### Opção 2: Maven
-```bash
-mvn spring-boot:run
-```
-
-## 🌐 Acesso à Aplicação
-
-- **Interface Web**: http://localhost:8080/avaliawifi
-- **Console H2**: http://localhost:8080/avaliawifi/h2-console
-  - JDBC URL: `jdbc:h2:file:./data/avaliawifi`
-  - User: `sa`
-  - Password: (deixar em branco)
-
-## ✨ Funcionalidades
-
-### 🏠 Residências
-- Cadastro de residências com nome, endereço e cliente
-- Lista e visualiza todas as residências cadastradas
-
-### 🚪 Cômodos  
-- Cadastro de cômodos por residência
-- Define dimensões (largura x comprimento)
-- Calcula área automaticamente
-
-### 📶 Medições WiFi
-- Registra medições de intensidade do sinal (dBm)
-- Define posição no cômodo (coordenadas X,Y)
-- Estatísticas por qualidade do sinal:
-  - **Forte**: ≥ -50 dBm (Verde)
-  - **Médio**: -50 a -70 dBm (Amarelo)  
-  - **Fraco**: < -70 dBm (Vermelho)
-
-## 🔧 Requisitos
-
-- **Java 8 ou superior**
-- **Nenhuma instalação adicional necessária!** 
-  - Banco H2 integrado
-  - Servidor web integrado
+- ✅ **Gerenciamento de Residências**: Cadastro completo com cliente e endereço
+- ✅ **Controle de Cômodos**: Organização por ambiente da residência
+- ✅ **Medições de Wi-Fi**: Registro de nível de sinal, velocidade e interferência
+- ✅ **Suporte Multi-banda**: 2.4GHz e 5GHz
+- ✅ **Relatórios Detalhados**: Análises estatísticas por cômodo e banda
+- ✅ **Interface Amigável**: Menu interativo via terminal
+- ✅ **Validação de Dados**: Verificações de entrada e formato de data brasileiro
 
 ## 🛠️ Tecnologias
 
-- **Spring Boot 2.7** - Framework web
-- **H2 Database** - Banco integrado
-- **Spring Data JPA** - Persistência
-- **Thymeleaf** - Template engine
-- **Bootstrap 5** - Interface responsiva
+- **Java 8+** - Linguagem principal
+- **PostgreSQL** - Banco de dados
+- **JDBC** - Conectividade com banco
+- **Maven** (opcional) - Gerenciamento de dependências
 
 ## 📋 Pré-requisitos
 
@@ -133,9 +98,12 @@ Cômodo: Sala
 
 ## 🔧 Melhorias Sugeridas
 
+- [ ] Implementar logs detalhados
+- [ ] Adicionar backup automático
 - [ ] Criar interface gráfica (JavaFX/Swing)
 - [ ] Implementar exportação para Excel/PDF
 - [ ] Adicionar gráficos de tendência
+- [ ] Sistema de notificações por e-mail
 
 ## 🐛 Solução de Problemas
 
