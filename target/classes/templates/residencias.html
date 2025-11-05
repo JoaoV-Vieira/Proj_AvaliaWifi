@@ -311,7 +311,12 @@
             `;
             
             fetch(`/avaliawifi/api/comodos/${id}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(comodos => {
                     if (comodos.length === 0) {
                         comodosContainer.innerHTML = `
@@ -339,10 +344,18 @@
                     }
                 })
                 .catch(error => {
+                    console.error('Erro detalhado:', error);
                     comodosContainer.innerHTML = `
                         <div class="alert alert-danger">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            Erro ao carregar cômodos: ${error.message}
+                            <strong>Erro ao carregar cômodos:</strong><br>
+                            ${error.message}<br>
+                            <small class="mt-2 d-block">
+                                <strong>Possíveis causas:</strong><br>
+                                • Verifique se a aplicação está rodando em http://localhost:8080/avaliawifi<br>
+                                • Verifique se o ID da residência (${id}) existe no banco de dados<br>
+                                • Verifique o console do navegador (F12) para mais detalhes
+                            </small>
                         </div>
                     `;
                 });

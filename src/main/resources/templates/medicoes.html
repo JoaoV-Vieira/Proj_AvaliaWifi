@@ -104,7 +104,7 @@
                                     <div class="card-body text-center">
                                         <i class="fas fa-signal fa-2x mb-2"></i>
                                         <h5>Sinal Forte</h5>
-                                        <h3 id="sinais-fortes">0</h3>
+                                        <h3 th:text="${sinaisFortes}">0</h3>
                                         <small>≥ -50 dBm</small>
                                     </div>
                                 </div>
@@ -114,7 +114,7 @@
                                     <div class="card-body text-center">
                                         <i class="fas fa-signal fa-2x mb-2"></i>
                                         <h5>Sinal Médio</h5>
-                                        <h3 id="sinais-medios">0</h3>
+                                        <h3 th:text="${sinaisMedios}">0</h3>
                                         <small>-50 a -70 dBm</small>
                                     </div>
                                 </div>
@@ -124,7 +124,7 @@
                                     <div class="card-body text-center">
                                         <i class="fas fa-signal fa-2x mb-2"></i>
                                         <h5>Sinal Fraco</h5>
-                                        <h3 id="sinais-fracos">0</h3>
+                                        <h3 th:text="${sinalsFracos}">0</h3>
                                         <small>< -70 dBm</small>
                                     </div>
                                 </div>
@@ -200,13 +200,13 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formNovaMedicao">
+                <form id="formNovaMedicao" method="post" action="/avaliawifi/medicoes">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="residenciaMedicao" class="form-label">Residência</label>
-                                    <select class="form-select" id="residenciaMedicao" name="residencia" required>
+                                    <select class="form-select" id="residenciaMedicao" name="residenciaId" required>
                                         <option value="">Selecione uma residência</option>
                                         <!-- Opções serão carregadas dinamicamente -->
                                     </select>
@@ -215,7 +215,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="comodoMedicao" class="form-label">Cômodo</label>
-                                    <select class="form-select" id="comodoMedicao" name="comodo" required>
+                                    <select class="form-select" id="comodoMedicao" name="comodoId" required>
                                         <option value="">Selecione um cômodo</option>
                                         <!-- Opções serão carregadas dinamicamente -->
                                     </select>
@@ -242,7 +242,7 @@
                         
                         <div class="mb-3">
                             <label for="intensidade" class="form-label">Intensidade do Sinal (dBm)</label>
-                            <input type="number" class="form-control" id="intensidade" name="intensidade" min="-100" max="0" required>
+                            <input type="number" class="form-control" id="intensidade" name="intensidadeDbm" min="-100" max="0" required>
                             <div class="form-text">
                                 <strong>Como medir:</strong> No seu dispositivo móvel, use um app como "WiFi Analyzer" (Android) ou "WiFi Explorer" (iOS) para ver a intensidade em dBm.
                             </div>
@@ -269,6 +269,42 @@
             </div>
         </div>
     </div>
+
+    <!-- Script para carregar residências e cômodos no modal de nova medição -->
+<script>
+// Carregar residências ao abrir o modal
+document.getElementById('novaMedicaoModal').addEventListener('show.bs.modal', function() {
+    fetch('/avaliawifi/api/residencias')
+        .then(r => r.json())
+        .then(residencias => {
+            const select = document.getElementById('residenciaMedicao');
+            select.innerHTML = '<option value="">Selecione uma residência</option>';
+            residencias.forEach(r => {
+                select.innerHTML += '<option value="' + r.id + '">' + r.nome + ' - ' + r.cliente + '</option>';
+            });
+        });
+});
+
+// Carregar cômodos quando residência for selecionada
+document.getElementById('residenciaMedicao').addEventListener('change', function() {
+    const residenciaId = this.value;
+    const selectComodo = document.getElementById('comodoMedicao');
+    
+    if (!residenciaId) {
+        selectComodo.innerHTML = '<option value="">Selecione um cômodo</option>';
+        return;
+    }
+    
+    fetch('/avaliawifi/api/comodos/' + residenciaId)
+        .then(r => r.json())
+        .then(comodos => {
+            selectComodo.innerHTML = '<option value="">Selecione um cômodo</option>';
+            comodos.forEach(c => {
+                selectComodo.innerHTML += '<option value="' + c.id + '">' + c.nome + '</option>';
+            });
+        });
+});
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -304,14 +340,6 @@
                 }
             }
         }
-        
-        // Atualizar estatísticas dinamicamente
-        document.addEventListener('DOMContentLoaded', function() {
-            // Estatísticas do template (Thymeleaf já renderiza os valores)
-            document.getElementById('sinais-fortes').textContent = /*[[${sinaisFortes}]]*/ '0';
-            document.getElementById('sinais-medios').textContent = /*[[${sinaisMedios}]]*/ '0';
-            document.getElementById('sinais-fracos').textContent = /*[[${sinalsFracos}]]*/ '0';
-        });
 
         let medicaoParaExcluir = null;
 
@@ -347,6 +375,20 @@
                     excluirMedicao(id);
                 });
             });
+
+            // Confirmar exclusão
+            const confirmarBtn = document.getElementById('confirmarExclusaoMedicaoBtn');
+            if (confirmarBtn) {
+                confirmarBtn.addEventListener('click', function() {
+                    if (medicaoParaExcluir) {
+                        const form = document.createElement('form');
+                        form.method = 'post';
+                        form.action = `/avaliawifi/medicoes/deletar/${medicaoParaExcluir}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
         });
 
         // Função para visualizar medição com gráfico
@@ -481,62 +523,12 @@
             new bootstrap.Modal(document.getElementById('confirmarExclusaoMedicaoModal')).show();
         }
 
-        // Confirmar exclusão
-        document.getElementById('confirmarExclusaoMedicaoBtn').addEventListener('click', function() {
-            if (medicaoParaExcluir) {
-                const form = document.createElement('form');
-                form.method = 'post';
-                form.action = `/avaliawifi/medicoes/deletar/${medicaoParaExcluir}`;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-
         // Atualizar página em tempo real
         function atualizarPagina() {
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
         }
-
-        // Form de nova medição
-        document.getElementById('formNovaMedicao').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch('/avaliawifi/medicoes', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    bootstrap.Modal.getInstance(document.getElementById('novaMedicaoModal')).hide();
-                    this.reset();
-                    atualizarPagina();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        // Form de editar medição
-        document.getElementById('formEditarMedicao').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    bootstrap.Modal.getInstance(document.getElementById('editarMedicaoModal')).hide();
-                    atualizarPagina();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        });
     </script>
     
     <!-- Modal Editar Medição -->

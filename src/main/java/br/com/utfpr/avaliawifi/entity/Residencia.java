@@ -1,5 +1,6 @@
 package br.com.utfpr.avaliawifi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,11 @@ public class Residencia {
     
     // Relacionamentos com cascade para exclusão automática dos filhos
     @OneToMany(mappedBy = "residencia", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"residencia", "hibernateLazyInitializer", "handler"})
     private List<Comodo> comodos = new ArrayList<>();
     
     @OneToMany(mappedBy = "residencia", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"residencia", "comodo", "hibernateLazyInitializer", "handler"})
     private List<Medicao> medicoes = new ArrayList<>();
     
     // Construtores

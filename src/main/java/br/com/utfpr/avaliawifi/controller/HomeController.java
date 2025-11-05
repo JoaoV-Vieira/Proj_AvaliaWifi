@@ -191,10 +191,22 @@ public class HomeController {
         return "redirect:/medicoes";
     }
     
+    @GetMapping("/api/residencias")
+    @ResponseBody
+    public List<Residencia> getAllResidencias() {
+        return residenciaRepository.findAll();
+    }
+    
     @GetMapping("/api/comodos/{residenciaId}")
     @ResponseBody
     public List<Comodo> getComodosByResidencia(@PathVariable Long residenciaId) {
         return comodoRepository.findByResidenciaId(residenciaId);
+    }
+    
+    @GetMapping("/api/comodos/all")
+    @ResponseBody
+    public List<Comodo> getAllComodos() {
+        return comodoRepository.findAll();
     }
     
     @GetMapping("/api/medicoes/estatisticas/{comodoId}")

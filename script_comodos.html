@@ -1,0 +1,14 @@
+<!-- Script para carregar residências no modal de novo cômodo -->
+<script>
+document.getElementById('novoComodoModal').addEventListener('show.bs.modal', function() {
+    fetch('/avaliawifi/api/residencias')
+        .then(r => r.json())
+        .then(residencias => {
+            const select = document.getElementById('residencia');
+            select.innerHTML = '<option value="">Selecione uma residência</option>';
+            residencias.forEach(r => {
+                select.innerHTML += '<option value="' + r.id + '">' + r.nome + ' - ' + r.cliente + '</option>';
+            });
+        });
+});
+</script>

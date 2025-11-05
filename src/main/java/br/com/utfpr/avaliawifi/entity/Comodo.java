@@ -1,5 +1,6 @@
 package br.com.utfpr.avaliawifi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,12 @@ public class Comodo {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "residencia_id")
+    @JsonIgnoreProperties({"comodos", "hibernateLazyInitializer", "handler"})
     private Residencia residencia;
     
     // Relacionamento com medições - quando um cômodo é excluído, suas medições também são
     @OneToMany(mappedBy = "comodo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"comodo", "hibernateLazyInitializer", "handler"})
     private List<Medicao> medicoes = new ArrayList<>();
     
     // Construtores

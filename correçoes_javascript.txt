@@ -1,0 +1,137 @@
+=== CORREÇÃO 1: Adicionar em comodos.html ===
+Adicionar antes do fechamento do </script> (linha 542):
+
+// Função para carregar residências
+function carregarResidencias() {
+    fetch('/avaliawifi/api/residencias')
+        .then(response => response.json())
+        .then(residencias => {
+            const selectResidencia = document.getElementById('residencia');
+            selectResidencia.innerHTML = '<option value="">Selecione uma residência</option>';
+            
+            residencias.forEach(residencia => {
+                const option = document.createElement('option');
+                option.value = residencia.id;
+                option.textContent = `${residencia.nome} - ${residencia.cliente}`;
+                selectResidencia.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar residências:', error);
+            alert('Erro ao carregar residências. Por favor, recarregue a página.');
+        });
+}
+
+=== CORREÇÃO 2: Adicionar em medicoes.html ===
+Adicionar antes do fechamento do </script>:
+
+// Função para carregar residências
+function carregarResidencias() {
+    fetch('/avaliawifi/api/residencias')
+        .then(response => response.json())
+        .then(residencias => {
+            const selectResidencia = document.getElementById('residenciaMedicao');
+            selectResidencia.innerHTML = '<option value="">Selecione uma residência</option>';
+            
+            residencias.forEach(residencia => {
+                const option = document.createElement('option');
+                option.value = residencia.id;
+                option.textContent = `${residencia.nome} - ${residencia.cliente}`;
+                selectResidencia.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar residências:', error);
+        });
+}
+
+// Função para carregar cômodos de uma residência
+function carregarComodos(residenciaId) {
+    if (!residenciaId) {
+        const selectComodo = document.getElementById('comodoMedicao');
+        selectComodo.innerHTML = '<option value="">Selecione um cômodo</option>';
+        return;
+    }
+    
+    fetch(`/avaliawifi/api/comodos/${residenciaId}`)
+        .then(response => response.json())
+        .then(comodos => {
+            const selectComodo = document.getElementById('comodoMedicao');
+            selectComodo.innerHTML = '<option value="">Selecione um cômodo</option>';
+            
+            comodos.forEach(comodo => {
+                const option = document.createElement('option');
+                option.value = comodo.id;
+                option.textContent = comodo.nome;
+                selectComodo.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar cômodos:', error);
+        });
+}
+
+// Event listener para mudança de residência
+document.getElementById('residenciaMedicao').addEventListener('change', function() {
+    carregarComodos(this.value);
+});
+
+// Carregar residências ao abrir o modal
+const novaMedicaoModal = document.getElementById('novaMedicaoModal');
+novaMedicaoModal.addEventListener('show.bs.modal', function() {
+    carregarResidencias();
+});
+
+=== CORREÇÃO 3: Adicionar event listener para modal de novo cômodo em comodos.html ===
+Adicionar no DOMContentLoaded (linha 324):
+
+const novoComodoModal = document.getElementById('novoComodoModal');
+novoComodoModal.addEventListener('show.bs.modal', function() {
+    carregarResidencias();
+});
+
+=== CORREÇÃO 4: Adicionar form data correct no submit do formulário de comodos ===
+Alterar o submit do formNovoComodo para incluir residenciaId como parâmetro:
+
+document.getElementById('formNovoComodo').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const residenciaId = document.getElementById('residencia').value;
+    
+    fetch(`/avaliawifi/comodos?residenciaId=${residenciaId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('novoComodoModal')).hide();
+            this.reset();
+            atualizarPagina();
+        }
+    })
+    .catch(error => console.error('Erro:', error));
+});
+
+=== CORREÇÃO 5: Adicionar form submit correct para medições ===
+Alterar o submit do formNovaMedicao:
+
+document.getElementById('formNovaMedicao').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const comodoId = document.getElementById('comodoMedicao').value;
+    
+    fetch(`/avaliawifi/medicoes?comodoId=${comodoId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('novaMedicaoModal')).hide();
+            this.reset();
+            atualizarPagina();
+        }
+    })
+    .catch(error => console.error('Erro:', error));
+});

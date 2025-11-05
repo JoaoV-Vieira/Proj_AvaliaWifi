@@ -1,5 +1,6 @@
 package br.com.utfpr.avaliawifi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -25,10 +26,12 @@ public class Medicao {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comodo_id")
+    @JsonIgnoreProperties({"medicoes", "residencia", "hibernateLazyInitializer", "handler"})
     private Comodo comodo;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "residencia_id")
+    @JsonIgnoreProperties({"comodos", "medicoes", "hibernateLazyInitializer", "handler"})
     private Residencia residencia;
     
     // Construtores

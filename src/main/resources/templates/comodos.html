@@ -172,11 +172,11 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formNovoComodo">
+                <form id="formNovoComodo" method="post" action="/avaliawifi/comodos">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="residencia" class="form-label">Residência</label>
-                            <select class="form-select" id="residencia" name="residencia" required>
+                            <select class="form-select" id="residencia" name="residenciaId" required>
                                 <option value="">Selecione uma residência</option>
                                 <!-- Opções serão carregadas dinamicamente -->
                             </select>
@@ -215,6 +215,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Script para carregar residências no modal de novo cômodo -->
+<script>
+document.getElementById('novoComodoModal').addEventListener('show.bs.modal', function() {
+    fetch('/avaliawifi/api/residencias')
+        .then(r => r.json())
+        .then(residencias => {
+            const select = document.getElementById('residencia');
+            select.innerHTML = '<option value="">Selecione uma residência</option>';
+            residencias.forEach(r => {
+                select.innerHTML += '<option value="' + r.id + '">' + r.nome + ' - ' + r.cliente + '</option>';
+            });
+        });
+});
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Modal Editar Cômodo -->
@@ -319,6 +334,12 @@
 
         // Event listeners para os botões usando event delegation
         document.addEventListener('DOMContentLoaded', function() {
+            // Carregar residências ao abrir o modal de novo cômodo
+            const novoComodoModal = document.getElementById('novoComodoModal');
+            novoComodoModal.addEventListener('show.bs.modal', function() {
+                carregarResidencias();
+            });
+
             // Botões visualizar
             document.querySelectorAll('.btn-visualizar').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -494,45 +515,6 @@
                 window.location.reload();
             }, 1500);
         }
-
-        // Form de novo cômodo
-        document.getElementById('formNovoComodo').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch('/avaliawifi/comodos', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    bootstrap.Modal.getInstance(document.getElementById('novoComodoModal')).hide();
-                    this.reset();
-                    atualizarPagina();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        });
-
-        // Form de editar cômodo
-        document.getElementById('formEditarComodo').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    bootstrap.Modal.getInstance(document.getElementById('editarComodoModal')).hide();
-                    atualizarPagina();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        });
     </script>
 </body>
 </html>
